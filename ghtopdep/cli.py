@@ -5,7 +5,10 @@ import os
 import sys
 import textwrap
 from email.utils import formatdate, parsedate
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from click.core import Command as ClickCommand
 from urllib.parse import urlparse
 
 import appdirs
@@ -738,3 +741,8 @@ def cli(
         show_result(
             sorted_repos, total_repos_count, more_than_zero_count, destinations, table
         )
+
+
+# Type annotation for IDEs: Explicitly declare cli as a Command after @click.command() decoration
+if TYPE_CHECKING:
+    cli: ClickCommand  # type: ignore[no-redef]
