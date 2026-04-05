@@ -1,6 +1,7 @@
 import calendar
 import json
 import os
+import re
 import sys
 import textwrap
 import datetime
@@ -111,6 +112,21 @@ def get_max_deps(sess, url):
     deps_count_element = parsed_node.css_first('.table-list-header-toggle .btn-link.selected')
     max_deps = int(deps_count_element.text().strip().split()[0].replace(',', ''))
     return max_deps
+
+
+def parse_dependent_counts(html):
+    """Extract repo/package dependent counts from a dependents page."""
+    tree = HTMLParser(html)
+    counts = {}
+    for link in tree.css("div.table-list-header-toggle a.btn-link"):
+        text = link.text(strip=True)
+        match = re.match(r"([\d,]+)\s+(Repositor(?:ies|y)|Packages?)\s*$", text)
+        if match:
+            count = int(match.group(1).replace(",", ""))
+            kind = match.group(2)
+            key = "REPOSITORY" if kind.startswith("Repositor") else "PACKAGE"
+            counts[key] = count
+    return counts
 
 
 @click.command()
